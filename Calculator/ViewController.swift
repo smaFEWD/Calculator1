@@ -48,6 +48,18 @@ class ViewController: UIViewController {
                 displayLabel.text = numValue
                 isFinishedTypingNumber = false
             } else { // isFinishedTypingNumber == false
+                if numValue == "." {
+                    guard let currentDisplayValue = Double(displayLabel.text!) else {
+                        fatalError("Cannot convert display label text to a double")
+                    }
+                    // floor will round down. So floor(8.1) is 8 and compared to 8, it will be false
+                    // but if you floor(8) and compare that to 8, then it's true
+                    let isInt = floor(currentDisplayValue) == Double(displayLabel.text!)
+                    // so if we dont' have an integer (which is !isInt)--which means it's "false" then we want to return, and not append numValue to the display
+                    if !isInt {
+                        return
+                    }
+                }
                 displayLabel.text = displayLabel.text! + numValue // appending addl values into the display label
             }
             
