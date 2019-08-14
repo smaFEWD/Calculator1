@@ -12,27 +12,32 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var displayLabel: UILabel!
     private var isFinishedTypingNumber : Bool = true
+    private var displayValue : Double { // a computed property with a getter and a setter
+        get{
+            guard let number = Double(displayLabel.text!) else {
+                fatalError("Cannot convert a display label text to a Double")
+            }
+            return number
+        }
+        set {
+            displayLabel.text = String(newValue)
+        }
+    }
     
     
     @IBAction func calcButtonPressed(_ sender: UIButton) {
         
         //What should happen when a non-number button is pressed
             isFinishedTypingNumber = true
-        // need to turn it into a Double from a String, but it will produce an optional Double, which means it "may be nil" which can crash the app.
-        // can use a force unwrap (!), an if/let (optional binding), or a guard/let
-        // using a guard/let allows us to have a fatalerror with a descriptive message
-        
-        guard let number = Double(displayLabel.text!) else {
-            fatalError("Cannot convert a display label text to a Double")
-        }
-        
+   
         if let calcMethod = sender.currentTitle {
             if calcMethod == "+/-" {
-                displayLabel.text = String(number * -1)
+                // global variable "displayValue" is refactoring the below line
+                displayValue = displayValue * -1
             } else if calcMethod == "AC" {
                 displayLabel.text = "0"
             } else if calcMethod == "%" {
-                displayLabel.text = String(number * 0.01)
+                displayValue = displayValue * 0.01
             }
         }
     
@@ -49,12 +54,9 @@ class ViewController: UIViewController {
                 isFinishedTypingNumber = false
             } else { // isFinishedTypingNumber == false
                 if numValue == "." {
-                    guard let currentDisplayValue = Double(displayLabel.text!) else {
-                        fatalError("Cannot convert display label text to a double")
-                    }
                     // floor will round down. So floor(8.1) is 8 and compared to 8, it will be false
                     // but if you floor(8) and compare that to 8, then it's true
-                    let isInt = floor(currentDisplayValue) == Double(displayLabel.text!)
+                    let isInt = floor(displayValue) == displayValue
                     // so if we dont' have an integer (which is !isInt)--which means it's "false" then we want to return, and not append numValue to the display
                     if !isInt {
                         return
