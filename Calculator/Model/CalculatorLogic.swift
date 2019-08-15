@@ -8,23 +8,53 @@
 
 import Foundation
 
-class CalculatorLogic {
-    var number: Double
+struct CalculatorLogic {
+    private var number: Double?
+    // setting "external parameter name " to nothing and internal parameter name is "number"
     
-    init(number: Double){
-        //self.number -- this "current class"
-        self.number = number
+    // when inititializing this variable, we have it at nil, so we add "?" to make it an optional
+    
+    private var intermediateCalculation: (n1: Double, calcMethod: String)?
+    
+    mutating func setNumber(_ number: Double){
+         self.number = number
     }
     
-    func calculate(symbol: String) -> Double? {
-        if symbol == "+/-" {
-            // global variable "displayValue" is refactoring the below line
-            return number * -1
-        } else if symbol == "AC" {
-            return 0
-        } else if symbol == "%" {
-            return number * 0.01
+    mutating func calculate(symbol: String) -> Double? {
+        if let n = number {
+            switch symbol{
+            case "+/-" :
+                return n * -1
+            case "AC" :
+                return 0
+            case "%" :
+                return n * 0.01
+            case "=" :
+                return performTwoNumberCalculation(n2: n)
+            default:
+                intermediateCalculation = (n1: n, calcMethod: symbol)
+            }
         }
+
         return nil 
+    }
+    private func performTwoNumberCalculation(n2: Double) -> Double? {
+        if let n1 = intermediateCalculation?.n1,
+            let operation = intermediateCalculation?.calcMethod {
+            
+            switch operation {
+            case "+":
+                return n1 + n2
+           case "-":
+                return n1 - n2
+            case "×":
+                return n1 * n2
+            case "÷":
+                return n1 / n2
+            default:
+                fatalError("The operation passed in does not match an of the class")
+            }
+        }
+        return nil
     }
 }
